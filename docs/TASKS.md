@@ -145,14 +145,14 @@ el registro se guarda igual, sin clima, sin que la app se congele.
 
 ## Fase 9 — Optimización de la API
 
-- [ ] Implementar timeout (`AbortController`, ~5s) en la llamada a
+- [x] Implementar timeout (`AbortController`, ~5s) en la llamada a
       Open-Meteo con fallback silencioso a "sin clima".
-- [ ] Implementar caché por ubicación redondeada (memoria o AsyncStorage
+- [x] Implementar caché por ubicación redondeada (memoria o AsyncStorage
       con TTL corto) para evitar consultas repetidas desde el mismo lugar.
-- [ ] (Si alcanza el tiempo) Revisar que el `FlatList` del listado use
+- [x] (Si alcanza el tiempo) Revisar que el `FlatList` del listado use
       `keyExtractor` y miniaturas de tamaño fijo.
-- [ ] Anotar en un borrador (para el informe) qué medidas se implementaron
-      y con qué archivo/línea de código se respaldan.
+- [x] Anotar en un borrador (para el informe) qué medidas se implementaron
+      y con qué archivo/línea de código se respaldan. (`docs/OPTIMIZACION.md`)
 
 **Cómo probarlo:** Cortar la red a mitad de una consulta y confirmar que
 el timeout actúa; repetir una consulta desde la misma ubicación y
