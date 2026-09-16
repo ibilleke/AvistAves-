@@ -174,24 +174,28 @@ operación asíncrona.
 
 ## Fase 11 — Informe (34 puntos, no se programa, se escribe)
 
-- [ ] Sección de arquitectura: cómo funciona Expo/React Native por dentro,
+- [x] Sección de arquitectura: cómo funciona Expo/React Native por dentro,
       qué rol cumple Expo (bridge/JSI, Expo Go, managed workflow),
-      terminología correcta.
-- [ ] Sección de 3 patrones de diseño presentes en el framework, cada uno
+      terminología correcta. (`docs/INFORME.md`)
+- [x] Sección de 3 patrones de diseño presentes en el framework, cada uno
       con referencia concreta a archivo/línea del código propio (ej.
       Repository en `sightings.repository.ts`, Provider/Context si se usa,
       Hook personalizado como patrón, etc.). Sin ejemplos de código propio
-      no hay puntaje completo.
-- [ ] Sección de comparación con otros dos frameworks — **uno debe ser
+      no hay puntaje completo. (`docs/INFORME.md`)
+- [x] Sección de comparación con otros dos frameworks — **uno debe ser
       Ionic + Capacitor** (el no elegido) — con fortalezas y debilidades
       reales de cada uno (React Native, Ionic+Capacitor, y un tercero, ej.
-      Flutter), no solo un listado de ventajas.
-- [ ] Declaración de uso de IA: qué se usó y para qué.
+      Flutter), no solo un listado de ventajas. (`docs/INFORME.md`)
+- [ ] Declaración de uso de IA: qué se usó y para qué. (Borrador en
+      `docs/INFORME.md` sección 4 — revisar y completar antes de
+      entregar.)
 - [ ] Demo grabada (video ≤3 min) o capturas/link, mostrando: registrar un
       avistamiento real con cámara y GPS en vivo, ver el listado, ver el
-      detalle con clima y ubicación legible.
+      detalle con clima y ubicación legible. (Requiere dispositivo físico
+      y grabación — pendiente.)
 - [ ] Publicar el informe (Markdown en el repo, PDF, o video) y enlazarlo
-      desde el `README.md`.
+      desde el `README.md`. (Enlazado desde `README.md`; falta completar
+      secciones 4 y 5 del informe primero.)
 
 **Cómo probarlo:** Releer el informe como si fuera el docente: ¿cada
 patrón de diseño apunta a una línea real del código? ¿la comparación tiene

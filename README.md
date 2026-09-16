@@ -55,4 +55,6 @@ El plan de construcción por fases está en
 
 ## Informe
 
-_Pendiente: enlace al informe/demo (Fase 11)._
+Ver [`docs/INFORME.md`](docs/INFORME.md) (arquitectura, patrones de
+diseño, comparación de frameworks, declaración de uso de IA). Falta
+agregar el video/capturas de la demo antes de la entrega final.
