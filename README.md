@@ -159,6 +159,12 @@ Para evitar llamadas innecesarias a Open-Meteo y mantener la UI responsiva:
    coordenadas redondeadas a ~2 decimales durante unos minutos, evitando
    consultas repetidas si el usuario reintenta el guardado desde el mismo
    lugar.
+3. **Renderizado eficiente del listado** — `FlatList` con `keyExtractor`
+   por `id` y miniaturas de tamaño fijo en `SightingCard`, evitando
+   trabajo innecesario de render durante el scroll.
+
+Detalle con referencias a archivo/línea en
+[`docs/OPTIMIZACION.md`](docs/OPTIMIZACION.md).
 
 ## Pruebas
 
@@ -186,3 +192,5 @@ verifican manualmente en Expo Go.
 - [`docs/BRIEF.md`](docs/BRIEF.md) — detalle funcional y requerimientos
 - [`docs/STACK.md`](docs/STACK.md) — arquitectura técnica completa
 - [`docs/TASKS.md`](docs/TASKS.md) — plan de construcción por fases
+- [`docs/OPTIMIZACION.md`](docs/OPTIMIZACION.md) — medidas de optimización
+  del consumo de la API, con referencias a archivo/línea
