@@ -39,7 +39,28 @@ pnpm android     # abrir en emulador/dispositivo Android
 pnpm ios         # abrir en simulador iOS (requiere macOS)
 pnpm lint        # ESLint
 pnpm typecheck   # tsc --noEmit
+pnpm test        # pruebas unitarias (Jest + React Native Testing Library)
 ```
+
+## Pruebas unitarias
+
+36 pruebas con Jest (`jest-expo`) y React Native Testing Library, cubriendo
+la lógica que no depende de hardware real:
+
+- `src/lib/dateInput.test.ts` — parseo/formato de fecha del formulario.
+- `src/lib/storage.test.ts` — wrapper de AsyncStorage.
+- `src/features/sightings/sightings.repository.test.ts` — `getAll`,
+  `create`, `getById`, orden por fecha, ids únicos.
+- `src/features/weather/weather.mapper.test.ts` — mapeo de `weather_code`.
+- `src/features/weather/openMeteo.client.test.ts` — respuesta exitosa,
+  fallo de red, respuesta no-ok, y caché por ubicación redondeada.
+- `src/features/location/reverseGeocode.test.ts` — formato de dirección y
+  manejo de fallos.
+- `src/components/EmptyState.test.tsx`,
+  `src/components/SightingCard.test.tsx` — render y eventos de UI.
+
+Cámara y GPS reales no se testean por unidad (requieren hardware); se
+verifican manualmente en Expo Go.
 
 ## Pantallas
 
