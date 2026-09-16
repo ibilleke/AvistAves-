@@ -94,14 +94,14 @@ correcto según el `id`.
 
 ## Fase 6 — Integración de cámara (expo-camera, RF-01)
 
-- [ ] Solicitar permiso de cámara con explicación de para qué se usa.
-- [ ] Pantalla/flujo para tomar foto desde "Nuevo avistamiento" (sin
+- [x] Solicitar permiso de cámara con explicación de para qué se usa.
+- [x] Pantalla/flujo para tomar foto desde "Nuevo avistamiento" (sin
       opción de elegir de galería).
-- [ ] Guardar la URI de la foto en el `BirdSighting` (reemplaza el
+- [x] Guardar la URI de la foto en el `BirdSighting` (reemplaza el
       placeholder de la Fase 3).
-- [ ] Validar: sin foto no se guarda el registro (mensaje claro).
-- [ ] Mostrar la foto real en el detalle y en las cards (thumbnail).
-- [ ] Manejar el caso de permiso denegado sin romper la app.
+- [x] Validar: sin foto no se guarda el registro (mensaje claro).
+- [x] Mostrar la foto real en el detalle y en las cards (thumbnail).
+- [x] Manejar el caso de permiso denegado sin romper la app.
 
 **Cómo probarlo:** Tomar una foto real al crear un registro y verla
 reflejada en el listado y en el detalle. Denegar el permiso y confirmar

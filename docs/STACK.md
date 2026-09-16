@@ -15,6 +15,7 @@ que a su vez sigue el enunciado oficial (`docs/enunciado-examen-avistaves.pdf`).
 | Ubicación           | expo-location                        |
 | Persistencia local  | AsyncStorage                         |
 | Clima               | Open-Meteo API (REST, sin API key)   |
+| Archivos locales    | expo-file-system (persistir la foto tomada) |
 | Entorno de desarrollo/pruebas | Expo Go SDK 54                 |
 | Gestor de paquetes | pnpm                                    |
 
