@@ -161,11 +161,11 @@ nuevo.
 
 ## Fase 10 — Pulido UI, estados y permisos
 
-- [ ] Estados de carga (loading) visibles durante cámara, GPS y consulta de
+- [x] Estados de carga (loading) visibles durante cámara, GPS y consulta de
       clima — nunca una pantalla congelada.
-- [ ] Mensajes claros si se deniegan permisos de cámara/ubicación, con
+- [x] Mensajes claros si se deniegan permisos de cámara/ubicación, con
       opción de reintentar.
-- [ ] Revisión general de estilos con NativeWind: contraste alto, botones
+- [x] Revisión general de estilos con NativeWind: contraste alto, botones
       grandes operables con una mano (diseño para terreno).
 
 **Cómo probarlo:** Denegar permisos manualmente y verificar los mensajes;

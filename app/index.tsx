@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 
 import { EmptyState } from '../src/components/EmptyState';
 import { SightingCard } from '../src/components/SightingCard';
@@ -42,8 +42,9 @@ export default function ListadoScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <Text className="text-neutral-500">Cargando…</Text>
+      <View className="flex-1 items-center justify-center gap-3 bg-white">
+        <ActivityIndicator size="large" color="#047857" />
+        <Text className="text-neutral-500">Cargando avistamientos…</Text>
       </View>
     );
   }

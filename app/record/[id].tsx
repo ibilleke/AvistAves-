@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
 
 import { reverseGeocode } from '../../src/features/location/reverseGeocode';
 import { sightingsRepository } from '../../src/features/sightings/sightings.repository';
@@ -42,7 +42,8 @@ export default function RecordDetailScreen() {
 
   if (sighting === undefined) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
+      <View className="flex-1 items-center justify-center gap-3 bg-white">
+        <ActivityIndicator size="large" color="#047857" />
         <Text className="text-neutral-500">Cargando…</Text>
       </View>
     );

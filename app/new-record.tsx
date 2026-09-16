@@ -1,6 +1,15 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { CameraCapture } from '../src/components/CameraCapture';
 import { persistCapturedPhoto } from '../src/lib/camera';
@@ -149,7 +158,10 @@ export default function NewRecordScreen() {
       <View className="gap-2 rounded-xl border border-neutral-200 p-3">
         <Text className="text-sm font-medium text-neutral-600">Ubicación</Text>
         {location.status === 'loading' && (
-          <Text className="text-neutral-500">Obteniendo ubicación…</Text>
+          <View className="flex-row items-center gap-2">
+            <ActivityIndicator size="small" color="#047857" />
+            <Text className="text-neutral-500">Obteniendo ubicación…</Text>
+          </View>
         )}
         {location.status === 'granted' && location.coords && (
           <Text className="text-emerald-700">
@@ -179,7 +191,10 @@ export default function NewRecordScreen() {
           <Text className="text-neutral-500">Esperando ubicación…</Text>
         )}
         {weatherStatus === 'loading' && (
-          <Text className="text-neutral-500">Consultando clima…</Text>
+          <View className="flex-row items-center gap-2">
+            <ActivityIndicator size="small" color="#047857" />
+            <Text className="text-neutral-500">Consultando clima…</Text>
+          </View>
         )}
         {weatherStatus === 'done' && weather && (
           <Text className="text-emerald-700">
@@ -235,8 +250,9 @@ export default function NewRecordScreen() {
       <Pressable
         onPress={handleSave}
         disabled={saving}
-        className="mt-2 items-center rounded-xl bg-emerald-700 px-6 py-4 disabled:opacity-50"
+        className="mt-2 flex-row items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-4 disabled:opacity-50"
       >
+        {saving && <ActivityIndicator size="small" color="#ffffff" />}
         <Text className="text-lg font-semibold text-white">
           {saving ? 'Guardando…' : 'Guardar avistamiento'}
         </Text>

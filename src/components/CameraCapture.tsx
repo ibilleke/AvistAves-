@@ -1,6 +1,6 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 type CameraCaptureProps = {
   onCapture: (uri: string) => void;
@@ -14,7 +14,8 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
 
   if (!permission) {
     return (
-      <View className="flex-1 items-center justify-center bg-black">
+      <View className="flex-1 items-center justify-center gap-3 bg-black">
+        <ActivityIndicator size="large" color="#ffffff" />
         <Text className="text-white">Verificando permiso de cámara…</Text>
       </View>
     );
@@ -58,8 +59,19 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
   return (
     <View className="flex-1 bg-black">
       <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back" />
+
+      {capturing && (
+        <View className="absolute inset-0 items-center justify-center bg-black/40">
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+      )}
+
       <View className="absolute bottom-0 left-0 right-0 flex-row items-center justify-between p-6">
-        <Pressable onPress={onCancel} className="rounded-full bg-black/50 px-5 py-3">
+        <Pressable
+          onPress={onCancel}
+          disabled={capturing}
+          className="rounded-full bg-black/50 px-5 py-3 disabled:opacity-50"
+        >
           <Text className="text-base text-white">Cancelar</Text>
         </Pressable>
         <Pressable
