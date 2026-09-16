@@ -39,12 +39,14 @@ quedar atrapado en ninguna vista (botón atrás siempre funciona).
 
 ## Fase 2 — Modelo de datos y persistencia local (RF-05)
 
-- [ ] Definir el tipo `BirdSighting` (`src/features/sightings/types.ts`)
+- [x] Definir el tipo `BirdSighting` (`src/features/sightings/types.ts`)
       tal como está en `docs/STACK.md` (incluye `count`, `observedAt`,
       `weather` opcional).
-- [ ] Implementar wrapper de AsyncStorage (`src/lib/storage.ts`).
-- [ ] Implementar `sightings.repository.ts` (`getAll`, `create`,
-      `getById`) con 1-2 registros hardcodeados/seed para probar.
+- [x] Implementar wrapper de AsyncStorage (`src/lib/storage.ts`).
+- [x] Implementar `sightings.repository.ts` (`getAll`, `create`,
+      `getById`). (Sin seed hardcodeado: se probó directamente con el
+      formulario real de la Fase 3, más rápido que una pantalla de
+      prueba descartable.)
 
 **Cómo probarlo:** Desde una pantalla de prueba, llamar `create()` con un
 registro de ejemplo y `getAll()` para listarlo por consola. Cerrar y
@@ -52,28 +54,28 @@ reabrir la app: el dato debe persistir.
 
 ## Fase 3 — Formulario de registro sin cámara/ubicación/clima (RF-01 parcial)
 
-- [ ] Formulario con: nombre del ave (texto libre), cantidad de ejemplares
+- [x] Formulario con: nombre del ave (texto libre), cantidad de ejemplares
       (numérico, mínimo 1), fecha/hora (prellenada con la actual,
       editable), notas opcionales.
-- [ ] Validación: sin nombre de ave o cantidad inválida, mostrar mensaje
+- [x] Validación: sin nombre de ave o cantidad inválida, mostrar mensaje
       claro (foto/ubicación se validan en la Fase 6 cuando existan).
-- [ ] Al guardar, crear un `BirdSighting` con foto/ubicación "mock"
+- [x] Al guardar, crear un `BirdSighting` con foto/ubicación "mock"
       (placeholders) vía `sightings.repository.create()`.
-- [ ] Al guardar con éxito, confirmar y volver al listado.
+- [x] Al guardar con éxito, confirmar y volver al listado.
 
 **Cómo probarlo:** Crear un registro desde el formulario y verificar que
 aparece luego en un listado simple (aunque sea texto plano).
 
 ## Fase 4 — Listado real (RF-03)
 
-- [ ] Pantalla Listado (`app/index.tsx`): todos los `BirdSighting`,
+- [x] Pantalla Listado (`app/index.tsx`): todos los `BirdSighting`,
       ordenados del más reciente al más antiguo.
-- [ ] Cada card: miniatura de foto, nombre del ave, fecha, temperatura (o
+- [x] Cada card: miniatura de foto, nombre del ave, fecha, temperatura (o
       indicador "sin clima").
-- [ ] Un filtro o un ordenamiento a elección (por fecha, por nombre del
+- [x] Un filtro o un ordenamiento a elección (por fecha, por nombre del
       ave o por cantidad).
-- [ ] Estado vacío diseñado (mensaje + botón a "Nuevo avistamiento").
-- [ ] Botón/acceso directo al formulario de registro.
+- [x] Estado vacío diseñado (mensaje + botón a "Nuevo avistamiento").
+- [x] Botón/acceso directo al formulario de registro.
 
 **Cómo probarlo:** Vaciar el storage y confirmar el estado vacío. Crear
 varios registros y confirmar orden, filtro/orden elegido, y que el estado
@@ -81,10 +83,10 @@ vacío desaparece.
 
 ## Fase 5 — Detalle de un avistamiento (RF-04 parcial)
 
-- [ ] Ruta dinámica `app/record/[id].tsx`.
-- [ ] Mostrar todos los campos del registro (foto grande, nombre, cantidad,
+- [x] Ruta dinámica `app/record/[id].tsx`.
+- [x] Mostrar todos los campos del registro (foto grande, nombre, cantidad,
       fecha/hora, notas).
-- [ ] Navegación desde las cards del Listado al Detalle, y vuelta atrás
+- [x] Navegación desde las cards del Listado al Detalle, y vuelta atrás
       sin quedar atrapado.
 
 **Cómo probarlo:** Tocar una card y verificar que se muestra el detalle
