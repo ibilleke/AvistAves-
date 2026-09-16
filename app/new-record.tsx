@@ -1,11 +1,13 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { CameraCapture } from '../src/components/CameraCapture';
 import { persistCapturedPhoto } from '../src/lib/camera';
 import { useCurrentLocation } from '../src/features/location/useCurrentLocation';
 import { sightingsRepository } from '../src/features/sightings/sightings.repository';
+import type { BirdSighting } from '../src/features/sightings/types';
+import { fetchCurrentWeather } from '../src/features/weather/openMeteo.client';
 
 function formatForInput(date: Date): string {
   const pad = (n: number) => n.toString().padStart(2, '0');
@@ -38,6 +40,22 @@ export default function NewRecordScreen() {
   const [showCamera, setShowCamera] = useState(false);
   const [saving, setSaving] = useState(false);
   const location = useCurrentLocation();
+  const [weather, setWeather] = useState<BirdSighting['weather']>(undefined);
+  const [weatherStatus, setWeatherStatus] = useState<'idle' | 'loading' | 'done'>('idle');
+
+  useEffect(() => {
+    if (!location.coords) return;
+    let isActive = true;
+    setWeatherStatus('loading');
+    fetchCurrentWeather(location.coords.latitude, location.coords.longitude).then((result) => {
+      if (!isActive) return;
+      setWeather(result);
+      setWeatherStatus('done');
+    });
+    return () => {
+      isActive = false;
+    };
+  }, [location.coords]);
 
   if (showCamera) {
     return (
@@ -92,6 +110,7 @@ export default function NewRecordScreen() {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
         },
+        weather,
       });
       Alert.alert('Avistamiento guardado', undefined, [
         { text: 'OK', onPress: () => router.replace('/') },
@@ -151,6 +170,25 @@ export default function NewRecordScreen() {
               <Text className="text-neutral-700">Reintentar</Text>
             </Pressable>
           </View>
+        )}
+      </View>
+
+      <View className="gap-2 rounded-xl border border-neutral-200 p-3">
+        <Text className="text-sm font-medium text-neutral-600">Clima</Text>
+        {weatherStatus === 'idle' && (
+          <Text className="text-neutral-500">Esperando ubicación…</Text>
+        )}
+        {weatherStatus === 'loading' && (
+          <Text className="text-neutral-500">Consultando clima…</Text>
+        )}
+        {weatherStatus === 'done' && weather && (
+          <Text className="text-emerald-700">
+            {weather.icon} {weather.description}, {Math.round(weather.temperatureC)}°C,{' '}
+            {weather.relativeHumidity}% humedad
+          </Text>
+        )}
+        {weatherStatus === 'done' && !weather && (
+          <Text className="text-neutral-500">Sin clima (no bloquea el registro)</Text>
         )}
       </View>
 

@@ -125,17 +125,17 @@ comportamiento correcto.
 
 ## Fase 8 — Integración de clima (Open-Meteo, RF-02)
 
-- [ ] Cliente HTTP a Open-Meteo (`weather/openMeteo.client.ts`) usando el
+- [x] Cliente HTTP a Open-Meteo (`weather/openMeteo.client.ts`) usando el
       parámetro `current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`.
-- [ ] Al crear un registro, usar lat/long obtenidas para consultar clima
+- [x] Al crear un registro, usar lat/long obtenidas para consultar clima
       actual y guardarlo (reemplaza el placeholder de clima).
-- [ ] Mapear `weather_code` a descripción + ícono legible
+- [x] Mapear `weather_code` a descripción + ícono legible
       (`weather.mapper.ts`).
-- [ ] Guardar y mostrar mínimo temperatura + condición + humedad relativa
+- [x] Guardar y mostrar mínimo temperatura + condición + humedad relativa
       (tercer dato elegido).
-- [ ] Manejar el caso de fallo de red: el registro se guarda igual, sin
+- [x] Manejar el caso de fallo de red: el registro se guarda igual, sin
       clima, sin bloquear el flujo.
-- [ ] Mostrar en el Listado el indicador de "sin clima" cuando corresponda,
+- [x] Mostrar en el Listado el indicador de "sin clima" cuando corresponda,
       y en el Detalle el clima de forma legible (nunca el código crudo).
 
 **Cómo probarlo:** Crear un registro con conexión a internet y verificar
