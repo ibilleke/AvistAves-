@@ -1,81 +1,188 @@
-# AvistAves
+# 🐦 AvistAves
 
-Bitácora móvil para voluntarios de una red de observadores de aves. Permite
-registrar un avistamiento en terreno (foto, ubicación GPS y clima del
-momento) y consultarlo después desde un listado y una vista de detalle. Es
-una app de un solo usuario/dispositivo: no tiene cuentas, perfiles ni feed
-comunitario.
+**Bitácora móvil para voluntarios de una red de observadores de aves.**
 
-Ver [`docs/BRIEF.md`](docs/BRIEF.md) para el detalle funcional y
-[`docs/STACK.md`](docs/STACK.md) para la arquitectura técnica.
+AvistAves permite registrar un avistamiento en terreno —con foto, ubicación
+GPS y clima del momento— y consultarlo después desde un listado y una vista
+de detalle. Es una app de un solo usuario/dispositivo: sin cuentas, perfiles
+ni feed comunitario, pensada para uso rápido a una mano en terreno.
 
-## Stack
+## Tabla de contenidos
 
-- React Native + Expo (SDK 54), TypeScript
-- Expo Router (navegación por archivos)
-- NativeWind (Tailwind para React Native)
-- expo-camera, expo-location
-- AsyncStorage (persistencia local)
-- Open-Meteo (clima, sin API key)
-- pnpm
+- [Características](#características)
+- [Stack técnico](#stack-técnico)
+- [Requisitos previos](#requisitos-previos)
+- [Instalación y ejecución](#instalación-y-ejecución)
+- [Scripts disponibles](#scripts-disponibles)
+- [Pantallas](#pantallas)
+- [Arquitectura del proyecto](#arquitectura-del-proyecto)
+- [Modelo de datos](#modelo-de-datos)
+- [Optimización de la API de clima](#optimización-de-la-api-de-clima)
+- [Pruebas](#pruebas)
+- [Documentación adicional](#documentación-adicional)
 
-## Cómo correrla
+## Características
 
-Requiere Node.js y pnpm instalados, y la app **Expo Go** en un dispositivo
-físico (o un emulador Android/iOS).
+- 📸 **Registro fotográfico en el momento** — la evidencia se toma con la
+  cámara del dispositivo (sin opción de galería).
+- 📍 **Geolocalización automática** — captura de GPS y reverse geocoding a
+  una dirección legible.
+- ☀️ **Clima en tiempo real** — temperatura, condición y humedad relativa
+  vía [Open-Meteo](https://open-meteo.com/), sin necesidad de API key.
+- 💾 **Persistencia local** — los avistamientos sobreviven al cierre de la
+  app (AsyncStorage), sin backend ni cuentas.
+- 🛡️ **Resiliente a fallos** — sin red o sin permisos, el registro se sigue
+  guardando; la app nunca queda bloqueada ni en blanco.
+- ✅ **Cubierto con pruebas unitarias** — lógica de negocio testeada con
+  Jest y React Native Testing Library.
+
+## Stack técnico
+
+| Capa                | Tecnología                        |
+|----------------------|-------------------------------------|
+| Framework            | React Native + Expo (SDK 54)       |
+| Lenguaje             | TypeScript                          |
+| Navegación           | Expo Router (file-based routing)   |
+| Estilos              | NativeWind (Tailwind para RN)      |
+| Cámara               | expo-camera                         |
+| Ubicación            | expo-location                       |
+| Persistencia local   | AsyncStorage                        |
+| Clima                | Open-Meteo API (REST, sin API key) |
+| Pruebas              | Jest + React Native Testing Library|
+| Gestor de paquetes   | pnpm                                 |
+
+Detalle completo de la arquitectura en [`docs/STACK.md`](docs/STACK.md).
+
+## Requisitos previos
+
+- [Node.js](https://nodejs.org/) (LTS recomendado)
+- [pnpm](https://pnpm.io/)
+- La app **Expo Go** instalada en un dispositivo físico (Android/iOS), o un
+  emulador Android / simulador iOS
+
+## Instalación y ejecución
 
 ```bash
 pnpm install
 pnpm start
 ```
 
-Esto levanta Metro y muestra un código QR: escanealo con Expo Go (Android)
+Esto levanta Metro y muestra un código QR: escaneálo con Expo Go (Android)
 o la cámara (iOS) para abrir la app en el dispositivo.
 
-Otros comandos:
+## Scripts disponibles
 
-```bash
-pnpm android     # abrir en emulador/dispositivo Android
-pnpm ios         # abrir en simulador iOS (requiere macOS)
-pnpm lint        # ESLint
-pnpm typecheck   # tsc --noEmit
-pnpm test        # pruebas unitarias (Jest + React Native Testing Library)
+| Comando           | Descripción                                    |
+|--------------------|--------------------------------------------------|
+| `pnpm start`       | Inicia el servidor de desarrollo (Expo/Metro)   |
+| `pnpm android`     | Abre la app en emulador/dispositivo Android      |
+| `pnpm ios`         | Abre la app en simulador iOS (requiere macOS)    |
+| `pnpm lint`        | Corre ESLint                                     |
+| `pnpm typecheck`   | Verifica tipos con `tsc --noEmit`                |
+| `pnpm test`        | Corre las pruebas unitarias (Jest)               |
+
+## Pantallas
+
+La app tiene exactamente 3 pantallas, conectadas con Expo Router:
+
+1. **Listado** (`/`) — todos los avistamientos, ordenados del más reciente
+   al más antiguo. Muestra miniatura, nombre del ave, fecha y temperatura
+   (o un indicador de "sin clima"). Incluye estado vacío diseñado y acceso
+   directo al formulario de registro.
+2. **Registro** (`/new-record`) — formulario de nuevo avistamiento: foto
+   (cámara), ubicación y clima se capturan automáticamente; el usuario
+   completa nombre del ave, cantidad de ejemplares, fecha/hora (prellenada,
+   editable) y notas opcionales. Valida que haya foto y ubicación antes de
+   guardar.
+3. **Detalle** (`/record/[id]`) — vista completa de un avistamiento: foto en
+   tamaño grande, todos los datos del formulario, clima legible (texto +
+   ícono) y ubicación traducida a dirección mediante reverse geocoding.
+
+## Arquitectura del proyecto
+
+```
+app/
+  _layout.tsx                # Layout raíz (providers, tema)
+  index.tsx                  # Listado — pantalla principal
+  new-record.tsx             # Formulario de nuevo avistamiento
+  record/
+    [id].tsx                 # Detalle de un avistamiento
+
+src/
+  components/                # Componentes UI reutilizables
+  features/
+    sightings/                # Modelo, repositorio y hooks de avistamientos
+    weather/                   # Cliente Open-Meteo y mapeo de clima
+    location/                  # Reverse geocoding
+  lib/                        # Wrappers de AsyncStorage, cámara, etc.
+  constants/                  # Tema y constantes de UI
 ```
 
-## Pruebas unitarias
+El acceso a datos está aislado detrás de un **patrón Repository**
+(`sightings.repository.ts`), que expone `getAll`, `create` y `getById` sin
+exponer AsyncStorage al resto de la app.
 
-36 pruebas con Jest (`jest-expo`) y React Native Testing Library, cubriendo
-la lógica que no depende de hardware real:
+## Modelo de datos
 
-- `src/lib/dateInput.test.ts` — parseo/formato de fecha del formulario.
-- `src/lib/storage.test.ts` — wrapper de AsyncStorage.
-- `src/features/sightings/sightings.repository.test.ts` — `getAll`,
-  `create`, `getById`, orden por fecha, ids únicos.
-- `src/features/weather/weather.mapper.test.ts` — mapeo de `weather_code`.
-- `src/features/weather/openMeteo.client.test.ts` — respuesta exitosa,
-  fallo de red, respuesta no-ok, y caché por ubicación redondeada.
-- `src/features/location/reverseGeocode.test.ts` — formato de dirección y
-  manejo de fallos.
-- `src/components/EmptyState.test.tsx`,
-  `src/components/SightingCard.test.tsx` — render y eventos de UI.
+```ts
+type BirdSighting = {
+  id: string;
+  birdName: string;            // acepta "no identificada"
+  count: number;                // mínimo 1
+  notes?: string;
+  photoUri: string;             // uri local de la foto
+  observedAt: string;           // fecha/hora del avistamiento (editable)
+  location: {
+    latitude: number;
+    longitude: number;
+    placeName?: string;         // resultado de reverse geocoding
+  };
+  weather?: {                   // ausente si Open-Meteo falló o no había red
+    temperatureC: number;
+    relativeHumidity: number;
+    weatherCode: number;
+    description: string;
+    icon: string;
+  };
+  createdAt: string;            // momento real de guardado (orden del listado)
+};
+```
+
+## Optimización del consumo de la API
+
+Para evitar llamadas innecesarias a Open-Meteo y mantener la UI responsiva:
+
+1. **Timeout + fallback silencioso** — la llamada se corta a los ~5s
+   (`AbortController`); si falla o expira, el registro se guarda sin clima
+   en vez de reintentar indefinidamente o bloquear la UI.
+2. **Caché por ubicación redondeada** — se cachea la respuesta por
+   coordenadas redondeadas a ~2 decimales durante unos minutos, evitando
+   consultas repetidas si el usuario reintenta el guardado desde el mismo
+   lugar.
+
+## Pruebas
+
+Suite de pruebas unitarias con Jest (`jest-expo`) y React Native Testing
+Library, cubriendo la lógica que no depende de hardware real:
+
+- Parseo/formato de fecha del formulario (`dateInput`)
+- Wrapper de AsyncStorage (`storage`)
+- Repositorio de avistamientos: `getAll`, `create`, `getById`, orden por
+  fecha, ids únicos
+- Mapeo de `weather_code` y cliente de Open-Meteo (éxito, fallo de red,
+  respuesta no-ok, caché por ubicación)
+- Reverse geocoding: formato de dirección y manejo de fallos
+- Render y eventos de UI de `EmptyState` y `SightingCard`
+
+```bash
+pnpm test
+```
 
 Cámara y GPS reales no se testean por unidad (requieren hardware); se
 verifican manualmente en Expo Go.
 
-## Pantallas
+## Documentación adicional
 
-1. **Listado** (`/`) — todos los avistamientos, más reciente primero.
-2. **Registro** (`/new-record`) — formulario de nuevo avistamiento (foto,
-   ubicación, clima automáticos).
-3. **Detalle** (`/record/[id]`) — vista completa de un avistamiento.
-
-## Estado del desarrollo
-
-El plan de construcción por fases está en
-[`docs/TASKS.md`](docs/TASKS.md).
-
-## Informe
-
-Ver [`docs/INFORME.md`](docs/INFORME.md) (arquitectura, patrones de
-diseño, comparación de frameworks, declaración de uso de IA). Falta
-agregar el video/capturas de la demo antes de la entrega final.
+- [`docs/BRIEF.md`](docs/BRIEF.md) — detalle funcional y requerimientos
+- [`docs/STACK.md`](docs/STACK.md) — arquitectura técnica completa
+- [`docs/TASKS.md`](docs/TASKS.md) — plan de construcción por fases
