@@ -2,6 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
 
+import { colors } from '../../src/constants/theme';
 import { reverseGeocode } from '../../src/features/location/reverseGeocode';
 import { sightingsRepository } from '../../src/features/sightings/sightings.repository';
 import type { BirdSighting } from '../../src/features/sightings/types';
@@ -43,7 +44,7 @@ export default function RecordDetailScreen() {
   if (sighting === undefined) {
     return (
       <View className="flex-1 items-center justify-center gap-3 bg-white">
-        <ActivityIndicator size="large" color="#047857" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text className="text-neutral-500">Cargando…</Text>
       </View>
     );
@@ -74,7 +75,7 @@ export default function RecordDetailScreen() {
         </View>
       )}
 
-      <Text className="text-2xl font-bold text-emerald-800">{sighting.birdName}</Text>
+      <Text className="text-2xl font-bold text-primary-dark">{sighting.birdName}</Text>
 
       <View className="gap-3 rounded-xl border border-neutral-200 p-4">
         <DetailRow label="Cantidad de ejemplares" value={String(sighting.count)} />

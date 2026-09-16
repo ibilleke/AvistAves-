@@ -2,6 +2,8 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
+import { colors } from '../constants/theme';
+
 type CameraCaptureProps = {
   onCapture: (uri: string) => void;
   onCancel: () => void;
@@ -15,7 +17,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
   if (!permission) {
     return (
       <View className="flex-1 items-center justify-center gap-3 bg-black">
-        <ActivityIndicator size="large" color="#ffffff" />
+        <ActivityIndicator size="large" color={colors.white} />
         <Text className="text-white">Verificando permiso de cámara…</Text>
       </View>
     );
@@ -30,7 +32,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
         </Text>
         <Pressable
           onPress={requestPermission}
-          className="w-full items-center rounded-xl bg-emerald-700 px-6 py-4"
+          className="w-full items-center rounded-xl bg-primary px-6 py-4"
         >
           <Text className="text-lg font-semibold text-white">
             {permission.canAskAgain ? 'Dar permiso' : 'Reintentar'}
@@ -62,7 +64,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
 
       {capturing && (
         <View className="absolute inset-0 items-center justify-center bg-black/40">
-          <ActivityIndicator size="large" color="#ffffff" />
+          <ActivityIndicator size="large" color={colors.white} />
         </View>
       )}
 

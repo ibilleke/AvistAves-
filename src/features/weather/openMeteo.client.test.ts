@@ -94,4 +94,29 @@ describe('fetchCurrentWeather', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it('retries once after a transient network failure and uses the second attempt', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('Network request failed'))
+      .mockResolvedValueOnce(jsonResponse(openMeteoBody({ temperature_2m: 12.5 })));
+    global.fetch = fetchMock;
+
+    const weather = await fetchCurrentWeather(-7.007, -8.008);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(weather?.temperatureC).toBe(12.5);
+  });
+
+  it('does not retry after an abort/timeout', async () => {
+    const abortError = new Error('Aborted');
+    abortError.name = 'AbortError';
+    const fetchMock = jest.fn().mockRejectedValue(abortError);
+    global.fetch = fetchMock;
+
+    const weather = await fetchCurrentWeather(-9.009, -11.011);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(weather).toBeUndefined();
+  });
 });

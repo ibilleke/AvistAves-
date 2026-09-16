@@ -4,13 +4,13 @@ Requisito (`docs/BRIEF.md`, sección de optimización): implementar **al
 menos 2 medidas** para reducir/controlar el consumo de la API de clima
 (Open-Meteo) y documentarlas con referencia al código.
 
-Este proyecto implementa **tres** medidas: dos sobre la llamada a la API
-y una sobre el renderizado del listado.
+Este proyecto implementa **cuatro** medidas: tres sobre la llamada a la
+API y una sobre el renderizado del listado.
 
 ## 1. Timeout con fallback silencioso
 
 **Dónde:** [`src/features/weather/openMeteo.client.ts:12`](../src/features/weather/openMeteo.client.ts#L12)
-y [`:38-39`](../src/features/weather/openMeteo.client.ts#L38-L39).
+y [`:39-40`](../src/features/weather/openMeteo.client.ts#L39-L40).
 
 ```ts
 const REQUEST_TIMEOUT_MS = 5000;
@@ -20,16 +20,14 @@ const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 ```
 
 La petición a Open-Meteo se corta a los ~5 segundos usando
-`AbortController`. Si la red está caída, el dispositivo está en modo
-avión, o la API tarda demasiado, el `catch` de
-[`openMeteo.client.ts:66-69`](../src/features/weather/openMeteo.client.ts#L66-L69)
-captura el abort (o cualquier otro fallo de red) y devuelve `undefined` en
-vez de propagar el error:
+`AbortController`. Si la API tarda demasiado, `requestOnce` lanza un
+`AbortError` que `fetchCurrentWeather` reconoce explícitamente para **no**
+reintentar (ver medida 2) y devolver `undefined` de inmediato en vez de
+propagar el error o dejar la UI esperando:
 
 ```ts
-} catch {
-  // Timeout (AbortController) o sin red: se guarda el avistamiento sin
-  // clima en vez de bloquear el flujo o reintentar indefinidamente.
+const isTimeout = error instanceof Error && error.name === 'AbortError';
+if (isTimeout || isLastAttempt) {
   return undefined;
 }
 ```
@@ -37,18 +35,62 @@ vez de propagar el error:
 **Por qué:** sin esto, una API lenta o caída dejaría el formulario de
 registro colgado esperando una respuesta que nunca llega. Con el timeout,
 el avistamiento se guarda igual (sin clima) y la app nunca queda
-bloqueada ni en blanco. Cubierto por el test *"returns undefined instead
-of throwing when there is no network"* en
-[`openMeteo.client.test.ts:66-72`](../src/features/weather/openMeteo.client.test.ts#L66-L72).
+bloqueada ni en blanco. Cubierto por el test *"does not retry after an
+abort/timeout"* en
+[`openMeteo.client.test.ts`](../src/features/weather/openMeteo.client.test.ts).
 
 **Cómo probarlo manualmente:** activar modo avión antes de registrar un
 avistamiento y confirmar que el registro se guarda sin clima, sin demoras
 largas ni pantallas congeladas.
 
-## 2. Caché por ubicación redondeada
+## 2. Reintento con backoff ante fallos de red transitorios
 
-**Dónde:** [`openMeteo.client.ts:13, 22-26`](../src/features/weather/openMeteo.client.ts#L13)
-y [`:32-36, 49, 64`](../src/features/weather/openMeteo.client.ts#L32-L36).
+**Dónde:** [`openMeteo.client.ts:14-15, 82-99`](../src/features/weather/openMeteo.client.ts#L82-L99).
+
+```ts
+const MAX_ATTEMPTS = 2;
+const RETRY_DELAY_MS = 300;
+...
+for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+  try {
+    return await requestOnce(latitude, longitude, key);
+  } catch (error) {
+    const isTimeout = error instanceof Error && error.name === 'AbortError';
+    const isLastAttempt = attempt === MAX_ATTEMPTS;
+    if (isTimeout || isLastAttempt) {
+      return undefined;
+    }
+    await wait(RETRY_DELAY_MS * attempt);
+  }
+}
+```
+
+Un fallo de red puntual (por ejemplo, una petición DNS que falla una sola
+vez) dispara **un** reintento tras una espera corta, en vez de rendirse
+inmediatamente. Deliberadamente **no** se reintenta cuando el fallo es un
+timeout (`AbortError`): si la API ya tardó 5 segundos, duplicar la espera
+no vale la pena y se prioriza no bloquear el guardado. Tampoco se
+reintenta una respuesta HTTP no-ok (4xx/5xx), ya que eso es una respuesta
+válida de la API, no un problema de red transitorio. El resultado fallido
+no se cachea, para que un intento posterior (con red ya recuperada)
+vuelva a golpear la API en vez de quedar "atrapado" con el fallo por el
+TTL de la caché.
+
+**Por qué:** las redes móviles tienen fallos intermitentes de un solo
+paquete; sin reintento, cualquier hipo de red deja el avistamiento sin
+clima aunque la red esté disponible un instante después. Cubierto por los
+tests *"retries once after a transient network failure and uses the
+second attempt"* y *"does not retry after an abort/timeout"* en
+[`openMeteo.client.test.ts`](../src/features/weather/openMeteo.client.test.ts).
+
+**Cómo probarlo manualmente:** difícil de forzar manualmente (requiere un
+fallo de red de un solo intento); se verifica con los tests unitarios
+mencionados, que simulan el fallo con un mock de `fetch`.
+
+## 3. Caché por ubicación redondeada
+
+**Dónde:** [`openMeteo.client.ts:13, 24-28`](../src/features/weather/openMeteo.client.ts#L13)
+y [`:76-80, 50, 65`](../src/features/weather/openMeteo.client.ts#L76-L80).
 
 ```ts
 const CACHE_TTL_MS = 5 * 60 * 1000;
@@ -83,7 +125,7 @@ location"* en
 la misma ubicación (sin moverse) y confirmar, con un log temporal en
 `fetchCurrentWeather`, que el segundo no vuelve a golpear la API.
 
-## 3. Renderizado eficiente del listado
+## 4. Renderizado eficiente del listado
 
 **Dónde:** [`app/index.tsx:97-104`](../app/index.tsx#L97-L104) y
 [`src/components/SightingCard.tsx:28-31`](../src/components/SightingCard.tsx#L28-L31).

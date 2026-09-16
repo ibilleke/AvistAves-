@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native
 
 import { EmptyState } from '../src/components/EmptyState';
 import { SightingCard } from '../src/components/SightingCard';
+import { colors } from '../src/constants/theme';
 import { sightingsRepository } from '../src/features/sightings/sightings.repository';
 import type { BirdSighting } from '../src/features/sightings/types';
 
@@ -43,7 +44,7 @@ export default function ListadoScreen() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center gap-3 bg-white">
-        <ActivityIndicator size="large" color="#047857" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text className="text-neutral-500">Cargando avistamientos…</Text>
       </View>
     );
@@ -70,7 +71,7 @@ export default function ListadoScreen() {
           <Pressable
             onPress={() => setSortMode('date')}
             className={`rounded-full px-3 py-1 ${
-              sortMode === 'date' ? 'bg-emerald-700' : 'bg-neutral-100'
+              sortMode === 'date' ? 'bg-primary' : 'bg-neutral-100'
             }`}
           >
             <Text
@@ -82,7 +83,7 @@ export default function ListadoScreen() {
           <Pressable
             onPress={() => setSortMode('name')}
             className={`rounded-full px-3 py-1 ${
-              sortMode === 'name' ? 'bg-emerald-700' : 'bg-neutral-100'
+              sortMode === 'name' ? 'bg-primary' : 'bg-neutral-100'
             }`}
           >
             <Text
@@ -105,7 +106,7 @@ export default function ListadoScreen() {
 
       <Pressable
         onPress={goToNewRecord}
-        className="absolute bottom-6 right-4 rounded-full bg-emerald-700 px-6 py-4 shadow-lg"
+        className="absolute bottom-6 right-4 rounded-full bg-primary px-6 py-4 shadow-lg"
       >
         <Text className="text-base font-semibold text-white">+ Nuevo avistamiento</Text>
       </Pressable>

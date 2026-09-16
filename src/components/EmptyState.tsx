@@ -16,7 +16,7 @@ export function EmptyState({ onCreate }: EmptyStateProps) {
       </Text>
       <Pressable
         onPress={onCreate}
-        className="mt-4 w-full rounded-xl bg-emerald-700 px-6 py-4"
+        className="mt-4 w-full rounded-xl bg-primary px-6 py-4"
       >
         <Text className="text-center text-lg font-semibold text-white">
           Nuevo avistamiento

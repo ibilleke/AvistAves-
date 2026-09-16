@@ -102,7 +102,7 @@ La app tiene exactamente 3 pantallas, conectadas con Expo Router:
 
 ```
 app/
-  _layout.tsx                # Layout raíz (providers, tema)
+  _layout.tsx                # Layout raíz (Stack de Expo Router)
   index.tsx                  # Listado — pantalla principal
   new-record.tsx             # Formulario de nuevo avistamiento
   record/
@@ -110,13 +110,20 @@ app/
 
 src/
   components/                # Componentes UI reutilizables
+  constants/                  # Tema y constantes de UI (colores)
   features/
     sightings/                # Modelo, repositorio y hooks de avistamientos
     weather/                   # Cliente Open-Meteo y mapeo de clima
-    location/                  # Reverse geocoding
+    location/                  # Ubicación (hook de GPS) y reverse geocoding
   lib/                        # Wrappers de AsyncStorage, cámara, etc.
-  constants/                  # Tema y constantes de UI
 ```
+
+Los colores de la app están centralizados en
+[`src/constants/theme.ts`](src/constants/theme.ts) (para props nativas como
+`color` en `ActivityIndicator`) y replicados como tokens de Tailwind en
+[`tailwind.config.js`](tailwind.config.js) (`bg-primary`, `text-primary`,
+`text-primary-dark`, `text-danger`), para no repetir códigos de color hex
+sueltos en cada pantalla.
 
 El acceso a datos está aislado detrás de un **patrón Repository**
 (`sightings.repository.ts`), que expone `getAll`, `create` y `getById` sin
@@ -153,13 +160,16 @@ type BirdSighting = {
 Para evitar llamadas innecesarias a Open-Meteo y mantener la UI responsiva:
 
 1. **Timeout + fallback silencioso** — la llamada se corta a los ~5s
-   (`AbortController`); si falla o expira, el registro se guarda sin clima
-   en vez de reintentar indefinidamente o bloquear la UI.
-2. **Caché por ubicación redondeada** — se cachea la respuesta por
+   (`AbortController`); si expira, el registro se guarda sin clima en vez
+   de bloquear la UI.
+2. **Reintento con backoff ante fallos de red transitorios** — un fallo de
+   red (no un timeout) dispara un único reintento tras una espera corta;
+   si vuelve a fallar, se guarda el avistamiento sin clima.
+3. **Caché por ubicación redondeada** — se cachea la respuesta por
    coordenadas redondeadas a ~2 decimales durante unos minutos, evitando
    consultas repetidas si el usuario reintenta el guardado desde el mismo
    lugar.
-3. **Renderizado eficiente del listado** — `FlatList` con `keyExtractor`
+4. **Renderizado eficiente del listado** — `FlatList` con `keyExtractor`
    por `id` y miniaturas de tamaño fijo en `SightingCard`, evitando
    trabajo innecesario de render durante el scroll.
 
@@ -176,7 +186,8 @@ Library, cubriendo la lógica que no depende de hardware real:
 - Repositorio de avistamientos: `getAll`, `create`, `getById`, orden por
   fecha, ids únicos
 - Mapeo de `weather_code` y cliente de Open-Meteo (éxito, fallo de red,
-  respuesta no-ok, caché por ubicación)
+  respuesta no-ok, caché por ubicación, reintento tras fallo transitorio,
+  sin reintento ante timeout/abort)
 - Reverse geocoding: formato de dirección y manejo de fallos
 - Render y eventos de UI de `EmptyState` y `SightingCard`
 

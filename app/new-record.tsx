@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import { CameraCapture } from '../src/components/CameraCapture';
+import { colors } from '../src/constants/theme';
 import { persistCapturedPhoto } from '../src/lib/camera';
 import { formatForInput, parseInputDate } from '../src/lib/dateInput';
 import { useCurrentLocation } from '../src/features/location/useCurrentLocation';
@@ -111,7 +112,7 @@ export default function NewRecordScreen() {
 
   return (
     <ScrollView className="flex-1 bg-white" contentContainerClassName="gap-4 p-6">
-      <Text className="text-xl font-semibold text-emerald-800">Nuevo avistamiento</Text>
+      <Text className="text-xl font-semibold text-primary-dark">Nuevo avistamiento</Text>
 
       <View className="gap-2">
         <Text className="text-sm font-medium text-neutral-600">Foto (evidencia)</Text>
@@ -139,18 +140,18 @@ export default function NewRecordScreen() {
         <Text className="text-sm font-medium text-neutral-600">Ubicación</Text>
         {location.status === 'loading' && (
           <View className="flex-row items-center gap-2">
-            <ActivityIndicator size="small" color="#047857" />
+            <ActivityIndicator size="small" color={colors.primary} />
             <Text className="text-neutral-500">Obteniendo ubicación…</Text>
           </View>
         )}
         {location.status === 'granted' && location.coords && (
-          <Text className="text-emerald-700">
+          <Text className="text-primary">
             ✓ {location.coords.latitude.toFixed(4)}, {location.coords.longitude.toFixed(4)}
           </Text>
         )}
         {(location.status === 'denied' || location.status === 'error') && (
           <View className="gap-2">
-            <Text className="text-red-600">
+            <Text className="text-danger">
               {location.status === 'denied'
                 ? 'Permiso de ubicación denegado.'
                 : 'No se pudo obtener la ubicación.'}
@@ -172,12 +173,12 @@ export default function NewRecordScreen() {
         )}
         {weatherStatus === 'loading' && (
           <View className="flex-row items-center gap-2">
-            <ActivityIndicator size="small" color="#047857" />
+            <ActivityIndicator size="small" color={colors.primary} />
             <Text className="text-neutral-500">Consultando clima…</Text>
           </View>
         )}
         {weatherStatus === 'done' && weather && (
-          <Text className="text-emerald-700">
+          <Text className="text-primary">
             {weather.icon} {weather.description}, {Math.round(weather.temperatureC)}°C,{' '}
             {weather.relativeHumidity}% humedad
           </Text>
@@ -230,9 +231,9 @@ export default function NewRecordScreen() {
       <Pressable
         onPress={handleSave}
         disabled={saving}
-        className="mt-2 flex-row items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-4 disabled:opacity-50"
+        className="mt-2 flex-row items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 disabled:opacity-50"
       >
-        {saving && <ActivityIndicator size="small" color="#ffffff" />}
+        {saving && <ActivityIndicator size="small" color={colors.white} />}
         <Text className="text-lg font-semibold text-white">
           {saving ? 'Guardando…' : 'Guardar avistamiento'}
         </Text>
