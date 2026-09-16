@@ -2,8 +2,14 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 
+import { reverseGeocode } from '../../src/features/location/reverseGeocode';
 import { sightingsRepository } from '../../src/features/sightings/sightings.repository';
 import type { BirdSighting } from '../../src/features/sightings/types';
+
+type AddressState =
+  | { status: 'loading' }
+  | { status: 'resolved'; text: string }
+  | { status: 'failed' };
 
 function formatDateTime(iso: string): string {
   const date = new Date(iso);
@@ -19,11 +25,20 @@ function formatDateTime(iso: string): string {
 export default function RecordDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [sighting, setSighting] = useState<BirdSighting | null | undefined>(undefined);
+  const [address, setAddress] = useState<AddressState>({ status: 'loading' });
 
   useEffect(() => {
     if (!id) return;
     sightingsRepository.getById(id).then((found) => setSighting(found ?? null));
   }, [id]);
+
+  useEffect(() => {
+    if (!sighting) return;
+    setAddress({ status: 'loading' });
+    reverseGeocode(sighting.location.latitude, sighting.location.longitude).then((text) => {
+      setAddress(text ? { status: 'resolved', text } : { status: 'failed' });
+    });
+  }, [sighting]);
 
   if (sighting === undefined) {
     return (
@@ -65,7 +80,13 @@ export default function RecordDetailScreen() {
         <DetailRow label="Fecha y hora" value={formatDateTime(sighting.observedAt)} />
         <DetailRow
           label="Ubicación"
-          value={sighting.location.placeName ?? 'Dirección no disponible'}
+          value={
+            address.status === 'loading'
+              ? 'Buscando dirección…'
+              : address.status === 'resolved'
+                ? address.text
+                : 'Dirección no disponible'
+          }
         />
         <DetailRow
           label="Clima"

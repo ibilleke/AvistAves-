@@ -30,6 +30,12 @@
           "cameraPermission": "AvistAves usa la cámara para fotografiar el ave observada como evidencia del avistamiento.",
           "microphonePermission": false
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "AvistAves usa tu ubicación para registrar dónde ocurrió el avistamiento."
+        }
       ]
     ]
   }

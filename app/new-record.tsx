@@ -4,6 +4,7 @@ import { Alert, Image, Pressable, ScrollView, Text, TextInput, View } from 'reac
 
 import { CameraCapture } from '../src/components/CameraCapture';
 import { persistCapturedPhoto } from '../src/lib/camera';
+import { useCurrentLocation } from '../src/features/location/useCurrentLocation';
 import { sightingsRepository } from '../src/features/sightings/sightings.repository';
 
 function formatForInput(date: Date): string {
@@ -36,6 +37,7 @@ export default function NewRecordScreen() {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [showCamera, setShowCamera] = useState(false);
   const [saving, setSaving] = useState(false);
+  const location = useCurrentLocation();
 
   if (showCamera) {
     return (
@@ -56,6 +58,13 @@ export default function NewRecordScreen() {
 
     if (!photoUri) {
       Alert.alert('Falta la foto', 'Tomá una foto como evidencia del avistamiento.');
+      return;
+    }
+    if (!location.coords) {
+      Alert.alert(
+        'Falta la ubicación',
+        'No pudimos obtener tu ubicación. Revisá el permiso e intentá de nuevo.',
+      );
       return;
     }
     if (!trimmedName) {
@@ -80,9 +89,8 @@ export default function NewRecordScreen() {
         photoUri,
         observedAt: observedAtDate.toISOString(),
         location: {
-          latitude: 0,
-          longitude: 0,
-          placeName: 'Ubicación de prueba (mock)',
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
         },
       });
       Alert.alert('Avistamiento guardado', undefined, [
@@ -116,6 +124,33 @@ export default function NewRecordScreen() {
           >
             <Text className="text-base font-medium text-neutral-600">📷 Tomar foto</Text>
           </Pressable>
+        )}
+      </View>
+
+      <View className="gap-2 rounded-xl border border-neutral-200 p-3">
+        <Text className="text-sm font-medium text-neutral-600">Ubicación</Text>
+        {location.status === 'loading' && (
+          <Text className="text-neutral-500">Obteniendo ubicación…</Text>
+        )}
+        {location.status === 'granted' && location.coords && (
+          <Text className="text-emerald-700">
+            ✓ {location.coords.latitude.toFixed(4)}, {location.coords.longitude.toFixed(4)}
+          </Text>
+        )}
+        {(location.status === 'denied' || location.status === 'error') && (
+          <View className="gap-2">
+            <Text className="text-red-600">
+              {location.status === 'denied'
+                ? 'Permiso de ubicación denegado.'
+                : 'No se pudo obtener la ubicación.'}
+            </Text>
+            <Pressable
+              onPress={location.retry}
+              className="items-center rounded-lg border border-neutral-300 px-4 py-2"
+            >
+              <Text className="text-neutral-700">Reintentar</Text>
+            </Pressable>
+          </View>
         )}
       </View>
 

@@ -109,14 +109,14 @@ que la app sigue usable con un mensaje claro.
 
 ## Fase 7 — Integración de ubicación (expo-location, RF-01 + RF-04)
 
-- [ ] Solicitar permiso de ubicación con explicación de para qué se usa.
-- [ ] Obtener lat/long automáticamente al abrir el formulario (o con botón
+- [x] Solicitar permiso de ubicación con explicación de para qué se usa.
+- [x] Obtener lat/long automáticamente al abrir el formulario (o con botón
       dedicado), reemplazando el placeholder.
-- [ ] Validar: sin ubicación no se guarda el registro (mensaje claro).
-- [ ] En el Detalle, convertir lat/long a dirección legible con
+- [x] Validar: sin ubicación no se guarda el registro (mensaje claro).
+- [x] En el Detalle, convertir lat/long a dirección legible con
       `reverseGeocodeAsync` (obligatorio — mostrar solo coordenadas no
       cumple RF-04). Si falla, mostrar un indicador claro.
-- [ ] Manejar el caso de permiso denegado sin romper la app.
+- [x] Manejar el caso de permiso denegado sin romper la app.
 
 **Cómo probarlo:** Crear un registro en distintos lugares (o simulando
 ubicación en el emulador) y confirmar que las coordenadas y la dirección
