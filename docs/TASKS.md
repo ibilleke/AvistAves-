@@ -14,8 +14,8 @@ optimización de API > pulido visual.
 - [x] Crear proyecto con Expo (SDK 54) + TypeScript usando pnpm.
 - [x] Configurar Expo Router (estructura `app/`).
 - [x] Instalar y configurar NativeWind (Tailwind).
-- [ ] `git init`, primer commit, crear repositorio **público** en GitHub y
-      hacer push.
+- [x] `git init`, primer commit, crear repositorio **público** en GitHub y
+      hacer push. (`https://github.com/ibilleke/AvistAves-`)
 - [x] Crear `README.md` con: qué es la app, cómo correrla (pnpm install,
       pnpm start), stack usado.
 - [x] Configurar ESLint/Prettier básicos (opcional pero recomendado).
